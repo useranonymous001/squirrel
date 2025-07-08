@@ -117,7 +117,7 @@ Parses an HTTP request from a network connection.
 ## Installation
 
 ```bash
-go get github.com/useranonymous001/squirrel
+go get github.com/yourusername/squirrel-framework
 ```
 
 ## Quick Start
@@ -125,7 +125,7 @@ go get github.com/useranonymous001/squirrel
 ```go
 package main
 
-import "github.com/useranonymous001/squirrel"
+import "github.com/yourusername/squirrel-framework"
 
 func main() {
     server := SpawnServer()
@@ -141,8 +141,93 @@ func main() {
 
 ## License
 
-[Your License Here]
+[Not Added Yet]
 
 ## Contributing
 
-[Contributing guidelines here]
+We welcome contributions to the Squirrel Framework! Please follow these guidelines to help us maintain a high-quality codebase.
+
+### Getting Started
+
+1. Fork the repository on GitHub
+2. Clone your fork locally:
+   ```bash
+   git clone https://github.com/yourusername/squirrel-framework.git
+   cd squirrel-framework
+   ```
+3. Create a new branch for your feature or bugfix:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+### Development Guidelines
+
+#### Code Style
+- Follow standard Go formatting using `gofmt`
+- Use meaningful variable and function names
+- Add comments for exported functions and types
+- Keep functions small and focused on a single responsibility
+
+#### Testing
+- Write unit tests for new features and bug fixes
+- Ensure all tests pass before submitting:
+  ```bash
+  go test ./...
+  ```
+- Aim for good test coverage of new code
+- Include both positive and negative test cases
+
+#### Documentation
+- Update the README.md if you add new features
+- Add inline documentation for exported functions
+- Include examples in your documentation when helpful
+
+### Submitting Changes
+
+1. **Commit your changes** with clear, descriptive commit messages:
+   ```bash
+   git commit -m "Add support for custom middleware ordering"
+   ```
+
+2. **Push to your fork**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+3. **Create a Pull Request** with:
+   - Clear title describing the change
+   - Detailed description of what was changed and why
+   - Reference to any related issues
+   - Screenshots or examples if applicable
+
+### Pull Request Guidelines
+
+- Keep PRs focused on a single feature or bug fix
+- Include tests for new functionality
+- Update documentation as needed
+- Ensure CI checks pass
+- Respond to code review feedback promptly
+
+### Issue Reporting
+
+When reporting bugs or requesting features:
+
+- Use the issue templates when available
+- Provide clear reproduction steps for bugs
+- Include Go version and operating system information
+- Search existing issues before creating new ones
+
+### Code of Conduct
+
+- Be respectful and inclusive in all interactions
+- Focus on constructive feedback
+- Help maintain a welcoming environment for all contributors
+
+### Questions?
+
+If you have questions about contributing, feel free to:
+- Open an issue with the "question" label
+- Start a discussion in the GitHub Discussions section
+- Contact the maintainers directly
+
+Thank you for contributing to Squirrel Framework!
