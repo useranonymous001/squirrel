@@ -2,6 +2,7 @@ package core
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -40,12 +41,56 @@ func NewResponse(conn *net.Conn) *Response {
 	}
 }
 
+// res.SetHeader
+// Sets header for response body
+func (r *Response) SetHeader(key, value string) {
+	r.headers[key] = value
+}
+
+// res.SetStatus
+// sets the status code for the response
+func (r *Response) SetStatus(status int) {
+	r.statusCode = status
+}
+
+// res.SetBody
+// accepts io.Reader type
+// works for any kind of stream data like:
+// reading File or Stream
+func (r *Response) SetBody(reader io.ReadCloser) {
+	r.body = io.NopCloser(reader)
+}
+
 // add methods and send to the client
 // res.Send() methods
 // write to the client
 
 func (r *Response) Write(body string) {
 	r.body = io.NopCloser(strings.NewReader(body))
+}
+
+// res.WriteBytes(b []byte)
+// accepts bytes of data and returns the io.ReadCloser
+// works well for binary responses Images Files Compressed/gzipped data
+func (r *Response) WriteBytes(b []byte) {
+	r.body = io.NopCloser(bytes.NewReader(b))
+}
+
+// res.JSON()
+// allows to send the response as json data
+// accepts any kind of data and returns response in json format
+func (r *Response) JSON(data interface{}) {
+	b, err := json.MarshalIndent(data, "", "")
+	if err != nil {
+		r.conn.Write([]byte("HTTP/1.1 500 Internal Server Error\r\n\r\n"))
+		return
+	}
+
+	r.SetHeader("Content-Type", "application/json")
+	r.contentType = "application/json"
+
+	r.WriteBytes(b)
+
 }
 
 func (r *Response) Send() {
