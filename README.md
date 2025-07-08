@@ -54,6 +54,9 @@ Reads the request body and returns it as a string.
 #### `Param(paramName string) string`
 Retrieves a URL parameter by name.
 
+#### `OriginalUrl() *Url.url`
+Retrieves the original URL of an incoming request
+
 #### `Query()` 
 *Coming soon...*
 
