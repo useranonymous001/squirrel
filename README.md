@@ -1,50 +1,148 @@
 # Squirrel Framework
-Simple and minimalist web framework for Go
 
-*** Types ***
+A simple and minimalist web framework for Go.
 
-    type Request struct {}
-    type Response struct {}
-    type HandlerFunc func(req *Request, res *Response)
-    type route struct{}
-    type Middleware func (HandlerFunc) HandlerFunc
-    type SqurlMux struct {}
+## Overview
 
+Squirrel Framework provides a lightweight HTTP server implementation with routing, middleware support, and request/response handling capabilities.
 
-*** Methods ***
+## Types
 
-    type Request struct {}
-        - ReadBodyAsString() (string error)
-        - Param(paramName string) string
-        - Query() // coming soon...
+### Request
+```go
+type Request struct {}
+```
+Represents an HTTP request with methods for accessing request data.
 
-    type Response struct {}
-        - SetHeader(key, value string)
-        - SetStatus(status int)
-        - Write (body string)
-        - SetBody(reader io.ReadCloser)
-        - WriteBytes(b []byte)
-        - Close()
-        - JSON(data interface{})
-        - Send()
+### Response
+```go
+type Response struct {}
+```
+Represents an HTTP response with methods for setting headers, status, and body content.
 
-    type HandlerFunc func(req *Request, res *Response)
+### HandlerFunc
+```go
+type HandlerFunc func(req *Request, res *Response)
+```
+Function signature for request handlers.
 
-    type route struct{}
+### route
+```go
+type route struct{}
+```
+Internal structure for route management.
 
-    type Middleware func (HandlerFunc) HandlerFunc
+### Middleware
+```go
+type Middleware func(HandlerFunc) HandlerFunc
+```
+Function signature for middleware that wraps handlers.
 
-    type SqurlMux struct {}
-        - Listen(addr string)
-        - Use(mw Middleware)
-        - Get(path, string, handler HandlerFunc, mws ...Middleware)
-        - Post(path, string, handler HandlerFunc, mws ...Middleware)
-        - Put(path, string, handler HandlerFunc, mws ...Middleware)
-        - Delete(path, string, handler HandlerFunc, mws ...Middleware)    
+### SqurlMux
+```go
+type SqurlMux struct {}
+```
+Main multiplexer for routing HTTP requests.
 
+## Methods
 
+### Request Methods
 
-*** Functions ***
-    func SpawnServer() *SqurlMux
-    func NewResponse(conn *net.Conn) *Response 
-    func ParseRequest(conn *net.Conn) *(Response, error) 
+#### `ReadBodyAsString() (string, error)`
+Reads the request body and returns it as a string.
+
+#### `Param(paramName string) string`
+Retrieves a URL parameter by name.
+
+#### `Query()` 
+*Coming soon...*
+
+### Response Methods
+
+#### `SetHeader(key, value string)`
+Sets an HTTP header.
+
+#### `SetStatus(status int)`
+Sets the HTTP status code.
+
+#### `Write(body string)`
+Writes a string to the response body.
+
+#### `SetBody(reader io.ReadCloser)`
+Sets the response body from an io.ReadCloser.
+
+#### `WriteBytes(b []byte)`
+Writes bytes to the response body.
+
+#### `Close()`
+Closes the response.
+
+#### `JSON(data interface{})`
+Writes JSON data to the response.
+
+#### `Send()`
+Sends the response to the client.
+
+### SqurlMux Methods
+
+#### `Listen(addr string)`
+Starts the server listening on the specified address.
+
+#### `Use(mw Middleware)`
+Adds middleware to the request processing pipeline.
+
+#### `Get(path string, handler HandlerFunc, mws ...Middleware)`
+Registers a GET route handler.
+
+#### `Post(path string, handler HandlerFunc, mws ...Middleware)`
+Registers a POST route handler.
+
+#### `Put(path string, handler HandlerFunc, mws ...Middleware)`
+Registers a PUT route handler.
+
+#### `Delete(path string, handler HandlerFunc, mws ...Middleware)`
+Registers a DELETE route handler.
+
+## Functions
+
+### `SpawnServer() *SqurlMux`
+Creates and returns a new SqurlMux instance.
+
+### `NewResponse(conn *net.Conn) *Response`
+Creates a new Response instance from a network connection.
+
+### `ParseRequest(conn *net.Conn) (*Request, error)`
+Parses an HTTP request from a network connection.
+
+## Installation
+
+```bash
+go get github.com/useranonymous001/squirrel
+```
+
+## Quick Start
+
+```go
+package main
+
+import "github.com/useranonymous001/squirrel"
+
+func main() {
+    server := SpawnServer()
+    
+    server.Get("/", func(req *Request, res *Response) {
+        res.Write("Hello, World!")
+        res.Send()
+    })
+    
+    server.Listen(":8080")
+}
+```
+
+## License
+
+[Your License Here]
+
+## Contributing
+
+[Contributing guidelines here]
