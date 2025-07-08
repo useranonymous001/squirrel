@@ -23,11 +23,32 @@ type Request struct {
 	Params        map[string]string
 	ContentLength int64
 	Close         bool
+	Queries       map[string]string
 }
 
 // func to parse the incoming request
 // basically we're listening to the incoming connection and then
 // parsing it by the server and returning the request parsed request object
+
+// methods for request object
+
+// req.Param(paramName string) => extract the param data from the url
+func (r *Request) Param(paramName string) string {
+	return r.Params[paramName]
+}
+
+// req.Query
+// fetches Query params from the url
+// adding soon..
+func (r *Request) Query(queryName string) string {
+	return r.Queries[queryName] // todo
+}
+
+// req.Original
+// gets the original request url
+func (r *Request) OriginalUrl() *url.URL {
+	return r.Url
+}
 
 func ParseRequest(conn net.Conn) (*Request, error) {
 
@@ -43,7 +64,7 @@ func ParseRequest(conn net.Conn) (*Request, error) {
 	method, path := parts[0], parts[1]
 
 	if method == "" {
-		return nil, fmt.Errorf("Invalid Method ")
+		return nil, fmt.Errorf("invalid method ")
 	}
 
 	headers := map[string]string{}
