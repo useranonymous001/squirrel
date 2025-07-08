@@ -1,0 +1,101 @@
+package core
+
+import (
+	"bufio"
+	"bytes"
+	"fmt"
+	"io"
+	"log"
+	"net"
+	"net/url"
+	"strconv"
+	"strings"
+)
+
+// creating the structure of the request object
+type Request struct {
+	Conn          net.Conn
+	Method        string
+	Path          string
+	Body          io.ReadCloser // inorder to read anykind of data
+	Headers       map[string]string
+	Url           *url.URL
+	Params        map[string]string
+	ContentLength int64
+	Close         bool
+}
+
+// func to parse the incoming request
+// basically we're listening to the incoming connection and then
+// parsing it by the server and returning the request parsed request object
+
+func ParseRequest(conn net.Conn) (*Request, error) {
+
+	reader := bufio.NewReader(conn)      // returns a new [Reader] whose buffer has default size
+	line, err := reader.ReadString('\n') // read until the first delim 'delimeter: \n'
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// extracting the first line of request
+	// GET HTTP/1.1 OK.
+	parts := strings.Fields(strings.TrimSpace(line))
+	method, path := parts[0], parts[1]
+
+	if method == "" {
+		return nil, fmt.Errorf("Invalid Method ")
+	}
+
+	headers := map[string]string{}
+	var contentLength int64
+
+	// now read the rest of the connection request
+	// parse it and add to headers as:
+	// key: value
+	// Content-Lenght: 123
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil || line == "\r\n" {
+			break
+		}
+
+		kv := strings.SplitN(strings.TrimSpace(line), ":", 2)
+		if len(kv) == 2 {
+			key := strings.TrimSpace(kv[0])
+			value := strings.TrimSpace(kv[1])
+			headers[key] = value
+
+			if strings.EqualFold(key, "Content-Length") {
+				contentLength, _ = strconv.ParseInt(value, 10, 64)
+			}
+
+		}
+	}
+
+	// if the conn is post request
+	// read the body as well
+	body := io.NopCloser(strings.NewReader(""))
+	if contentLength > 0 {
+		bodyBuf := make([]byte, contentLength)
+		_, err := io.ReadFull(body, bodyBuf)
+		if err != nil {
+			return nil, err
+		}
+		// converting the bytes into io.Reader type
+		// cause, our body is actually io.ReaderCloser
+		body = io.NopCloser(bytes.NewReader(bodyBuf))
+	}
+
+	u, _ := url.Parse(path)
+
+	return &Request{
+		Method:        method,
+		Path:          path,
+		Url:           u,
+		Body:          body,
+		Headers:       headers,
+		Close:         false,
+		ContentLength: contentLength,
+	}, nil
+
+}
