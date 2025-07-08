@@ -23,7 +23,7 @@ type Request struct {
 	Params        map[string]string
 	ContentLength int64
 	Close         bool
-	Queries       map[string]string
+	Queries       map[string][]string
 }
 
 // func to parse the incoming request
@@ -39,9 +39,10 @@ func (r *Request) Param(paramName string) string {
 
 // req.Query
 // fetches Query params from the url
-// adding soon..
-func (r *Request) Query(queryName string) string {
-	return r.Queries[queryName] // todo
+// returns array of query params
+// handling multiple query values
+func (r *Request) Query(queryName string) []string {
+	return r.Queries[queryName]
 }
 
 // req.Original
@@ -107,16 +108,26 @@ func ParseRequest(conn net.Conn) (*Request, error) {
 		body = io.NopCloser(bytes.NewReader(bodyBuf))
 	}
 
+	query := map[string][]string{}
 	u, _ := url.Parse(path)
+	for k, v := range u.Query() {
+		query[k] = v
+	}
+
+	actualPath := ""
+	if strings.HasSuffix(u.Path, "/") {
+		actualPath = strings.TrimSuffix(u.Path, "/")
+	}
 
 	return &Request{
 		Method:        method,
-		Path:          path,
+		Path:          actualPath, // just getting the pure path without query
 		Url:           u,
 		Body:          body,
 		Headers:       headers,
 		Close:         false,
 		ContentLength: contentLength,
+		Queries:       query,
 	}, nil
 
 }
