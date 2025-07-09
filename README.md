@@ -10,13 +10,32 @@ Squirrel Framework provides a lightweight HTTP server implementation with routin
 
 ### Request
 ```go
-type Request struct {}
+type Request struct {
+   Conn          net.Conn
+	Method        string
+	Path          string
+	Body          io.ReadCloser // inorder to read anykind of data
+	Headers       map[string]string
+	Url           *url.URL
+	Params        map[string]string
+	ContentLength int64
+	Close         bool
+	Queries       map[string][]string
+	Cookies       []*cookies.Cookie
+}
 ```
 Represents an HTTP request with methods for accessing request data.
 
 ### Response
 ```go
-type Response struct {}
+type Response struct {
+   conn        net.Conn
+	headers     map[string]string
+	contentType string
+	body        io.ReadCloser
+	statusCode  int
+	cookies     []*cookies.Cookie
+}
 ```
 Represents an HTTP response with methods for setting headers, status, and body content.
 
@@ -28,7 +47,14 @@ Function signature for request handlers.
 
 ### route
 ```go
-type route struct{}
+type route struct{
+   method  string
+	pattern string
+	handler core.HandlerFunc
+	// for route specific middleware
+	// a route may have more than one middleware
+	middleware []Middleware
+}
 ```
 Internal structure for route management.
 
@@ -40,9 +66,42 @@ Function signature for middleware that wraps handlers.
 
 ### SqurlMux
 ```go
-type SqurlMux struct {}
+type SqurlMux struct {
+   // grouping together the routes 
+   // the server mux
+   routes []route 
+	// global middlewares
+	// also an application have more than on middleware
+	middleware []Middleware
+}
 ```
 Main multiplexer for routing HTTP requests.
+
+### Cookies
+Cookies are small key-value pairs that the server sends to the client in a Set-Cookie header.
+Then, on subsequent requests, the client includes them in the Cookie header.
+```go
+type Cookie struct {
+	Name   string // name of the cookie
+	Value  string // cookie value
+	Quoted bool   // indicates whether the Value was initially Quoted or not
+
+	Path       string    // optional
+	Domain     string    // optional
+	Expires    time.Time // optional
+	RawExpires string    // optional
+
+	// MaxAge = 0; means no 'MaxAge' attributes set
+	// MaxAge < 0; means delete cookie now, equivalently MaxAge = 0
+	// MaxAge > 0; means Max-Age attribute present and available in seconds
+	MaxAge   int
+	Secure   bool
+	HttpOnly bool
+	SameSite SameSite
+	Raw      string
+	Unparsed []string // Raw text of unparsed attribute-value pairs
+}
+```
 
 ## Methods
 
@@ -60,6 +119,9 @@ Retrieves the original URL of an incoming request
 #### `Query() []string` 
 Retrieves a Query parameter by query name from the url
 Support Multi value query parameter
+
+#### `GetCookie(name string) *cookies.Cookie`
+Gets the cookie by its name
 
 ### Response Methods
 
@@ -87,6 +149,9 @@ Writes JSON data to the response.
 #### `Send()`
 Sends the response to the client.
 
+#### `SetCookie(cookie *cookies.Cookie)`
+Sets Set-Cookie response header and sends to the client
+
 ### SqurlMux Methods
 
 #### `Listen(addr string)`
@@ -107,6 +172,7 @@ Registers a PUT route handler.
 #### `Delete(path string, handler HandlerFunc, mws ...Middleware)`
 Registers a DELETE route handler.
 
+
 ## Functions
 
 ### `SpawnServer() *SqurlMux`
@@ -118,10 +184,16 @@ Creates a new Response instance from a network connection.
 ### `ParseRequest(conn *net.Conn) (*Request, error)`
 Parses an HTTP request from a network connection.
 
+### `func FormatSetCookie(c *Cookie) string`
+Serialize the cookie struct into string to set in the Set-Cookie header
+
+### `ParseCookieHeader(header string) []*cookies.Cookie`
+Parses the Cookie Header from the incoming request and sets in the req cookie
+
 ## Installation
 
 ```bash
-go get github.com/yourusername/squirrel-framework
+go get github.com/useranonymous001/squirrel
 ```
 
 ## Quick Start
@@ -129,7 +201,7 @@ go get github.com/yourusername/squirrel-framework
 ```go
 package main
 
-import "github.com/yourusername/squirrel-framework"
+import "github.com/useranonymous001/squirrel"
 
 func main() {
     server := SpawnServer()
