@@ -57,8 +57,9 @@ Retrieves a URL parameter by name.
 #### `OriginalUrl() *Url.url`
 Retrieves the original URL of an incoming request
 
-#### `Query()` 
-*Coming soon...*
+#### `Query() []string` 
+Retrieves a Query parameter by query name from the url
+Support Multi value query parameter
 
 ### Response Methods
 

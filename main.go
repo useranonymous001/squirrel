@@ -14,4 +14,5 @@ func main() {
 	server := server.SpawnServer()
 	server.Get("/home", examples.SquirrelApp)
 	server.Listen(":9000")
+
 }

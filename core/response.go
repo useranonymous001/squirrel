@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"squirrel/cookies"
 	"strings"
 )
 
@@ -16,7 +17,7 @@ type Response struct {
 	contentType string
 	body        io.ReadCloser
 	statusCode  int
-	close       bool
+	cookies     []*cookies.Cookie
 }
 
 var (
@@ -124,9 +125,24 @@ func (r *Response) Send() {
 	r.conn.Write([]byte(contentType))
 	r.conn.Write([]byte(contentLength))
 
+	// set the cookie headers to the client if available
+	for _, cookie := range r.cookies {
+		cookieHeader := cookies.FormatSetCookie(cookie)
+		r.SetHeader("Set-Cookie", cookieHeader)
+		// r.conn.Write([]byte("Set-Cookie: " + cookieHeader + "\r\n"))
+		r.conn.Write([]byte(fmt.Sprintf("Set-Cookie: %s\r\n", cookieHeader)))
+	}
+
 	r.conn.Write([]byte("\r\n")) // single blank line before writing the body
 
 	r.conn.Write(bodyBuf.Bytes())
 }
 
 // conn.Write([]byte) Write writes data to the connection.
+
+// res.SetCookie ()
+// sets the cookie to the response
+// and send to the client
+func (r *Response) SetCookie(cookie *cookies.Cookie) {
+	r.cookies = append(r.cookies, cookie)
+}

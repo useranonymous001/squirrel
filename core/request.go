@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/url"
+	"squirrel/cookies"
 	"strconv"
 	"strings"
 )
@@ -24,6 +25,7 @@ type Request struct {
 	ContentLength int64
 	Close         bool
 	Queries       map[string][]string
+	Cookies       []*cookies.Cookie
 }
 
 // func to parse the incoming request
@@ -70,6 +72,7 @@ func ParseRequest(conn net.Conn) (*Request, error) {
 
 	headers := map[string]string{}
 	var contentLength int64
+	var cookies []*cookies.Cookie
 
 	// now read the rest of the connection request
 	// parse it and add to headers as:
@@ -89,6 +92,11 @@ func ParseRequest(conn net.Conn) (*Request, error) {
 
 			if strings.EqualFold(key, "Content-Length") {
 				contentLength, _ = strconv.ParseInt(value, 10, 64)
+			}
+
+			if strings.EqualFold(key, "Cookie") {
+				cookies = ParseCookieHeader(value)
+				fmt.Println(cookies)
 			}
 
 		}
@@ -114,7 +122,7 @@ func ParseRequest(conn net.Conn) (*Request, error) {
 		query[k] = v
 	}
 
-	actualPath := ""
+	actualPath := path
 	if strings.HasSuffix(u.Path, "/") {
 		actualPath = strings.TrimSuffix(u.Path, "/")
 	}
@@ -128,6 +136,42 @@ func ParseRequest(conn net.Conn) (*Request, error) {
 		Close:         false,
 		ContentLength: contentLength,
 		Queries:       query,
+		Cookies:       cookies,
 	}, nil
 
+}
+
+// since the headers we receive the cookie mostly in name-value pair
+// we don't need to parse it much
+func ParseCookieHeader(header string) []*cookies.Cookie {
+
+	parts := strings.Split(header, ";")
+
+	var c []*cookies.Cookie
+
+	for _, part := range parts {
+
+		pair := strings.SplitN(strings.TrimSpace(part), "=", 2)
+
+		if len(pair) == 2 {
+			c = append(c, &cookies.Cookie{
+				Name:  pair[0],
+				Value: pair[1],
+			})
+		}
+
+	}
+	return c
+}
+
+// req.GetCookie
+// gets the cookie by its name
+func (r *Request) GetCookie(name string) *cookies.Cookie {
+
+	for _, cookie := range r.Cookies {
+		if cookie.Name == name {
+			return cookie
+		}
+	}
+	return nil
 }

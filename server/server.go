@@ -216,7 +216,6 @@ func matchPattern(pattern, path string, params map[string]string) bool {
 
 	// incoming req route path doesn't matches with the pattern
 	if len(patternSegment) != len(pathSegment) {
-		fmt.Println("fuckk")
 		return false
 	}
 
