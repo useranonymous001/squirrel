@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"squirrel/core"
+	"squirrel/middlewares"
 	"strings"
 )
 
@@ -67,7 +68,9 @@ type SquirrelMux struct {
 // start or create an instance of server accepting the connection
 // allows to have all communicattion between client and server
 func SpawnServer() *SquirrelMux {
-	return &SquirrelMux{}
+	s := &SquirrelMux{}
+	s.Use(middlewares.Recover)
+	return s
 }
 
 // methods for using/defining the global middleware
@@ -141,7 +144,7 @@ func (sm *SquirrelMux) Listen(addr string) error {
 			// parse the incoming request
 			req, err := core.ParseRequest(conn)
 			if err != nil {
-				log.Fatal("Error while parsing request", err)
+				log.Printf("Error while parsing request %v", err)
 				return
 			}
 
@@ -194,7 +197,7 @@ func (sm *SquirrelMux) Listen(addr string) error {
 			}
 
 			res.SetStatus(404)
-			res.Write("Route Not Found")
+			res.Write("Route Not Found\n")
 			res.Send()
 
 		}(conn)

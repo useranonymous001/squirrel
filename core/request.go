@@ -96,7 +96,6 @@ func ParseRequest(conn net.Conn) (*Request, error) {
 
 			if strings.EqualFold(key, "Cookie") {
 				cookies = ParseCookieHeader(value)
-				fmt.Println(cookies)
 			}
 
 		}
