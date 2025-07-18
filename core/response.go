@@ -54,6 +54,12 @@ func (r *Response) SetStatus(status int) {
 	r.statusCode = status
 }
 
+
+//res.GetStatusCode
+//getter function to private field of struct Response
+func (r *Response) GetStatusCode() int {
+	return r.statusCode
+}
 // res.SetBody
 // accepts io.Reader type
 // works for any kind of stream data like:
