@@ -65,11 +65,19 @@ type SquirrelMux struct {
 	middleware []Middleware
 }
 
+var autoRecoverEnabled = true
+
+func DisableAutoRecover() {
+	autoRecoverEnabled = false
+}
+
 // start or create an instance of server accepting the connection
 // allows to have all communicattion between client and server
 func SpawnServer() *SquirrelMux {
 	s := &SquirrelMux{}
-	s.Use(middlewares.Recover)
+	if autoRecoverEnabled {
+		s.Use(middlewares.Recover)
+	}
 	return s
 }
 
