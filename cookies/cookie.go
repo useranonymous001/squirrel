@@ -55,7 +55,7 @@ type Cookie struct {
 
 // serialize the cookie struct into string
 // to set in the Set-Cookie header
-func FormatSetCookie(c *Cookie) string {
+func FormatSetCookie(c Cookie) string {
 
 	const extraCookieLength = 110
 

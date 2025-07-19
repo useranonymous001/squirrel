@@ -36,5 +36,6 @@ func main() {
 		r2.Write("kei errror aayo")
 	})
 	server.Get("/home", examples.SquirrelApp)
+	server.Get("/magic", examples.RenderHtml)
 	server.Listen(":9000")
 }

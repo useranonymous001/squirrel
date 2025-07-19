@@ -17,7 +17,7 @@ type Response struct {
 	contentType string
 	body        io.ReadCloser
 	statusCode  int
-	cookies     []*cookies.Cookie
+	cookies     []cookies.Cookie
 }
 
 var (
@@ -150,6 +150,6 @@ func (r *Response) Send() {
 // res.SetCookie ()
 // sets the cookie to the response
 // and send to the client
-func (r *Response) SetCookie(cookie *cookies.Cookie) {
+func (r *Response) SetCookie(cookie cookies.Cookie) {
 	r.cookies = append(r.cookies, cookie)
 }
