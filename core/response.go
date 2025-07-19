@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"squirrel/cookies"
 	"strings"
 )
@@ -20,17 +21,6 @@ type Response struct {
 	cookies     []*cookies.Cookie
 }
 
-var (
-	statusText = map[int]string{
-		200: "OK",
-		404: "Not Found",
-		302: "Redirect",
-		500: "Internal Server Error",
-		403: "Forbidden",
-		401: "Bad Request",
-		// TODO: add more status texts as needed
-	}
-)
 
 // create a new response object
 func NewResponse(conn *net.Conn) *Response {
@@ -107,7 +97,7 @@ func (r *Response) Send() {
 		r.Write("")
 	}
 
-	statusLine := fmt.Sprintf("HTTP/1.1 %d %s\r\n", r.statusCode, statusText[r.statusCode])
+	statusLine := fmt.Sprintf("HTTP/1.1 %d %s\r\n", r.statusCode, http.StatusText(r.statusCode))
 	contentType := fmt.Sprintf("Content-Type: %s\r\n", r.contentType)
 
 	// A Buffer is a variable-sized buffer of bytes with [Buffer.Read] and [Buffer.Write] methods
