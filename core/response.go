@@ -28,6 +28,7 @@ var (
 		500: "Internal Server Error",
 		403: "Forbidden",
 		401: "Bad Request",
+		405: "Method Not Allowed",
 		// TODO: add more status texts as needed
 	}
 )
@@ -54,12 +55,12 @@ func (r *Response) SetStatus(status int) {
 	r.statusCode = status
 }
 
-
-//res.GetStatusCode
-//getter function to private field of struct Response
+// res.GetStatusCode
+// getter function to private field of struct Response
 func (r *Response) GetStatusCode() int {
 	return r.statusCode
 }
+
 // res.SetBody
 // accepts io.Reader type
 // works for any kind of stream data like:
@@ -108,7 +109,7 @@ func (r *Response) Send() {
 	}
 
 	statusLine := fmt.Sprintf("HTTP/1.1 %d %s\r\n", r.statusCode, statusText[r.statusCode])
-	contentType := fmt.Sprintf("Content-Type: %s\r\n", r.contentType)
+	contentType := fmt.Sprintf("Content-Type: %s\r\n", r.headers["Content-Type"])
 
 	// A Buffer is a variable-sized buffer of bytes with [Buffer.Read] and [Buffer.Write] methods
 

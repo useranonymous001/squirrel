@@ -19,4 +19,5 @@ func SquirrelApp(req *core.Request, res *core.Response) {
 	res.Write(myCookie.Value)
 	res.Write(myCookie.Name)
 	res.Write(myCookie.Value)
+	res.JSON(myCookie)
 }

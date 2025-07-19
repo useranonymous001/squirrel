@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"squirrel/core"
+	internal "squirrel/internal/static"
 	"squirrel/middlewares"
 	"strings"
 )
@@ -85,6 +86,16 @@ func SpawnServer() *SquirrelMux {
 // server.Use(Middleware)
 func (sm *SquirrelMux) Use(mw Middleware) {
 	sm.middleware = append(sm.middleware, mw)
+}
+
+// methods to serve static files
+// server.ServeStatic("prefix", "dirpath")
+func (sm *SquirrelMux) ServeStatic(prefix, dirpath string) {
+	sm.routes = append(sm.routes, route{
+		method:  "GET",
+		pattern: prefix,
+		handler: internal.ServeStaticHandler(prefix, dirpath),
+	})
 }
 
 // differnt http methods
@@ -176,14 +187,23 @@ func (sm *SquirrelMux) Listen(addr string) error {
 				if rt.method != req.Method {
 					continue // doesn't match with the incoming req, so skip and compare other route
 				}
+				// create handler along with available middlewares
+				routeHandler := rt.handler
+
+				// temporrary static file server
+				if req.Method == rt.method && strings.HasPrefix(req.Path, rt.pattern) {
+					routeHandler(req, res)
+					res.Send()
+					return
+				}
 
 				if matched := matchPattern(rt.pattern, req.Path, params); matched {
 					// do something
 					req.Params = params
 
 					// explanation of middleware handler at top
-					// create handler along with available middlewares
-					routeHandler := rt.handler
+
+					// routeHandler := rt.handler
 
 					// handling route specific middlewares
 					// cause we are executing all middlewares in reverse order of its implementation

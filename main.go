@@ -16,11 +16,25 @@ func main() {
 	// server.DisableAutoRecover()
 	server := server.SpawnServer()
 
+	/*
+		prefix => /assets
+		dirpath => core
+		req.Path => /assets/js/file.go
+
+		after trimming the prefix
+		relPath => /js/file.go
+		relPath => path.Clean(relPath) + dirpath
+		relPath => core/js/file.go
+
+	*/
+
+	server.ServeStatic("/assets", "examples")
+
+	server.Use(middlewares.Logger)
 	middlewares.SetGlobalMiddleware(func(a any, r1 *core.Request, r2 *core.Response) {
 		r2.SetStatus(500)
 		r2.Write("kei errror aayo")
 	})
 	server.Get("/home", examples.SquirrelApp)
 	server.Listen(":9000")
-
 }

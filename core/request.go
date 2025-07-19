@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/url"
+	"path/filepath"
 	"squirrel/cookies"
 	"strconv"
 	"strings"
@@ -121,7 +122,7 @@ func ParseRequest(conn net.Conn) (*Request, error) {
 		query[k] = v
 	}
 
-	actualPath := path
+	actualPath := filepath.Clean(path)
 	if strings.HasSuffix(u.Path, "/") {
 		actualPath = strings.TrimSuffix(u.Path, "/")
 	}
