@@ -184,11 +184,51 @@ Creates a new Response instance from a network connection.
 ### `ParseRequest(conn *net.Conn) (*Request, error)`
 Parses an HTTP request from a network connection.
 
-### `func FormatSetCookie(c *Cookie) string`
+### `func FormatSetCookie(c Cookie) string`
 Serialize the cookie struct into string to set in the Set-Cookie header
 
-### `ParseCookieHeader(header string) []*cookies.Cookie`
+### `ParseCookieHeader(header string) []cookies.Cookie`
 Parses the Cookie Header from the incoming request and sets in the req cookie
+
+### `ServeStatic(prefix, dirpath string)`
+Serves static files from the public directory
+
+Usage
+```go
+server.ServeStatic("/assets", "public")
+```
+
+
+## Built-In Middlewares
+
+### `func Logger(next core.HandlerFunc) core.HandlerFunc`
+```go
+import "middlewares"
+server := server.SpawnServer()
+server.Use(middlewares.Logger)
+```
+
+
+### `func Recover(next core.HandlerFunc) core.HandlerFunc`
+It is by default enabled that tries to catch the un-intended panic of the server.
+
+You can also create your own custom recover middleware and override the function using:
+
+`func SetGlobalMiddleware(fn func(any, *core.Request, *core.Response))`
+
+```go
+import "middlewares"
+middlewares.SetGlobalMiddleware(func(a any, r1 *core.Request, r2 *core.Response) {
+		r2.SetStatus(500)
+		r2.Write("Err: foo foo foo")
+	})
+```
+You can disable the default recover handler using `DisableAutoRecover()`
+```go
+server.DisableAutoRecover()
+```
+
+
 
 ## Installation
 
