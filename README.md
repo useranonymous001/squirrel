@@ -1,7 +1,7 @@
 # Squirrel Framework
 A simple and minimalist web framework for Go.
 
-- [Documentation](#https://squirrel-doc.vercel.app/)
+- https://squirrel-doc.vercel.app/
 
 ## Table of Contents
 - [Overview](#overview)
