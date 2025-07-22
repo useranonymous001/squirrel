@@ -3,9 +3,860 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squirrel</title>
+    <title>Squirrel Framework - Go Web Framework</title>
+    <style>
+/* css/main.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Light theme */
+    --primary-color: #007acc;
+    --primary-dark: #005999;
+    --primary-light: #33a3d9;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --bg-code: #f8f9fa;
+    --bg-card: #ffffff;
+    
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #adb5bd;
+    --text-inverse: #ffffff;
+    
+    --border-color: #dee2e6;
+    --border-light: #f1f3f4;
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'Fira Code', 'Monaco', 'Cascadia Code', 'Ubuntu Mono', monospace;
+    
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --bg-code: #161b22;
+    --bg-card: #161b22;
+    
+    --text-primary: #f0f6fc;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --text-inverse: #0d1117;
+    
+    --border-color: #30363d;
+    --border-light: #21262d;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: var(--transition);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Navigation */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-light);
+    z-index: 1000;
+    transition: var(--transition);
+}
+
+[data-theme="dark"] .navbar {
+    background: rgba(13, 17, 23, 0.95);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: var(--transition);
+    padding: 0.5rem 0;
+    position: relative;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--primary-color);
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary-color);
+    border-radius: 1px;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.report-bug-btn {
+    background: var(--danger-color);
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.report-bug-btn:hover {
+    background: #c82333;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Code blocks */
+.code-block {
+    position: relative;
+    background: var(--bg-code);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.code-block pre {
+    margin: 0;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.code-block code {
+    font-family: var(--font-mono);
+}
+
+.copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: var(--transition);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.code-block:hover .copy-btn {
+    opacity: 1;
+}
+
+.copy-btn:hover {
+    color: var(--primary-color);
+    background: var(--bg-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+    
+    .container {
+        padding: 0 1rem;
+    }
+}
+
+/* css/index.css */
+/* Hero Section */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+.aurora-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+.aurora {
+    position: absolute;
+    background: linear-gradient(45deg, 
+        rgba(0, 122, 204, 0.1) 0%,
+        rgba(51, 163, 217, 0.15) 50%,
+        rgba(0, 89, 153, 0.1) 100%);
+    border-radius: 50%;
+    animation: float 20s ease-in-out infinite;
+    filter: blur(60px);
+}
+
+.aurora-1 {
+    width: 400px;
+    height: 400px;
+    top: -200px;
+    left: -200px;
+    animation-delay: 0s;
+}
+
+.aurora-2 {
+    width: 300px;
+    height: 300px;
+    top: 50%;
+    right: -150px;
+    animation-delay: -10s;
+}
+
+.aurora-3 {
+    width: 500px;
+    height: 500px;
+    bottom: -250px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: -5s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-20px) rotate(90deg);
+    }
+    50% {
+        transform: translateY(-40px) rotate(180deg);
+    }
+    75% {
+        transform: translateY(-20px) rotate(270deg);
+    }
+}
+
+.hero-container {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.hero-content {
+    max-width: 500px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.stat i {
+    color: var(--primary-color);
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.hero-code {
+    position: relative;
+}
+
+.code-window {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: slideInUp 0.8s ease-out;
+}
+
+.code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.code-dots {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.code-dots span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.code-dots span:nth-child(1) { background: #ff5f56; }
+.code-dots span:nth-child(2) { background: #ffbd2e; }
+.code-dots span:nth-child(3) { background: #27ca3f; }
+
+.code-title
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    Fuckk Broohh, It works
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23007acc'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E" alt="Squirrel" class="logo-icon">
+                <span class="logo-text">Squirrel</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="docs.html" class="nav-link">Documentation</a>
+                <a href="#examples" class="nav-link">Examples</a>
+                <a href="https://github.com/useranonymous001/squirrel" class="nav-link" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="https://github.com/useranonymous001/squirrel/issues" class="report-bug-btn" target="_blank">
+                    <i class="fas fa-bug"></i> Report Bug
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="aurora-bg">
+            <div class="aurora aurora-1"></div>
+            <div class="aurora aurora-2"></div>
+            <div class="aurora aurora-3"></div>
+        </div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Squirrel Framework</span>
+                </h1>
+                <p class="hero-subtitle">
+                    A simple and minimalist web framework for Go
+                </p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <i class="fas fa-code"></i>
+                        <span>Lightweight</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-bolt"></i>
+                        <span>Fast</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <span>Middleware Support</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a href="#quickstart" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        Get Started
+                    </a>
+                    <a href="docs.html" class="btn btn-secondary">
+                        <i class="fas fa-book"></i>
+                        Documentation
+                    </a>
+                </div>
+            </div>
+            <div class="hero-code">
+                <div class="code-window">
+                    <div class="code-header">
+                        <div class="code-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span class="code-title">main.go</span>
+                    </div>
+                    <pre><code class="language-go">package main
+
+import "github.com/useranonymous001/squirrel"
+
+func main() {
+    server := SpawnServer()
+    
+    server.Get("/", func(req *Request, res *Response) {
+        res.Write("Hello, Squirrel! 🐿️")
+        res.Send()
+    })
+    
+    server.Listen(":8080")
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="installation" id="quickstart">
+        <div class="container">
+            <h2>Quick Start</h2>
+            <div class="installation-grid">
+                <div class="install-step">
+                    <div class="step-number">1</div>
+                    <h3>Install</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash">go get github.com/useranonymous001/squirrel</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">2</div>
+                    <h3>Create</h3>
+                    <div class="code-block">
+                        <pre><code class="language-go">server := SpawnServer()
+server.Get("/", handler)
+server.Listen(":8080")</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">3</div>
+                    <h3>Run</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash">go run main.go</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2>Why Choose Squirrel?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-feather-alt"></i>
+                    </div>
+                    <h3>Lightweight</h3>
+                    <p>Minimal overhead with maximum performance. Built for speed and efficiency.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3>Flexible Routing</h3>
+                    <p>Easy-to-use routing system with support for parameters and wildcards.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Middleware Support</h3>
+                    <p>Built-in and custom middleware support for authentication, logging, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cookie-bite"></i>
+                    </div>
+                    <h3>Cookie Management</h3>
+                    <p>Complete cookie handling with secure options and easy management.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <h3>Static Files</h3>
+                    <p>Serve static assets efficiently with built-in static file handling.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Error Recovery</h3>
+                    <p>Built-in panic recovery and error handling to keep your server running.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section class="examples" id="examples">
+        <div class="container">
+            <h2>Examples</h2>
+            <div class="example-tabs">
+                <button class="tab-btn active" onclick="showExample('basic')">Basic Server</button>
+                <button class="tab-btn" onclick="showExample('middleware')">Middleware</button>
+                <button class="tab-btn" onclick="showExample('json')">JSON API</button>
+                <button class="tab-btn" onclick="showExample('static')">Static Files</button>
+            </div>
+            
+            <div class="example-content">
+                <div class="example-panel active" id="basic">
+                    <h3>Basic HTTP Server</h3>
+                    <div class="code-block">
+                        <pre><code class="language-go">package main
+
+import "github.com/useranonymous001/squirrel"
+
+func main() {
+    server := SpawnServer()
+    
+    server.Get("/", func(req *Request, res *Response) {
+        res.Write("Welcome to Squirrel Framework!")
+        res.Send()
+    })
+    
+    server.Get("/user/:id", func(req *Request, res *Response) {
+        userID := req.Param("id")
+        res.Write("User ID: " + userID)
+        res.Send()
+    })
+    
+    server.Listen(":8080")
+}</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="example-panel" id="middleware">
+                    <h3>Using Middleware</h3>
+                    <div class="code-block">
+                        <pre><code class="language-go">package main
+
+import (
+    "github.com/useranonymous001/squirrel"
+    "middlewares"
+)
+
+func main() {
+    server := SpawnServer()
+    
+    // Global middleware
+    server.Use(middlewares.Logger)
+    
+    // Route with specific middleware
+    server.Get("/protected", protectedHandler, authMiddleware)
+    
+    server.Listen(":8080")
+}
+
+func authMiddleware(next HandlerFunc) HandlerFunc {
+    return func(req *Request, res *Response) {
+        // Check authentication
+        token := req.GetHeader("Authorization")
+        if token == "" {
+            res.SetStatus(401)
+            res.Write("Unauthorized")
+            res.Send()
+            return
+        }
+        next(req, res)
+    }
+}</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="example-panel" id="json">
+                    <h3>JSON API</h3>
+                    <div class="code-block">
+                        <pre><code class="language-go">type User struct {
+    ID   int    `json:"id"`
+    Name string `json:"name"`
+}
+
+func main() {
+    server := SpawnServer()
+    
+    server.Post("/users", func(req *Request, res *Response) {
+        body, err := req.ReadBodyAsString()
+        if err != nil {
+            res.SetStatus(400)
+            res.JSON(map[string]string{"error": "Invalid request"})
+            return
+        }
+        
+        // Process user creation...
+        user := User{ID: 1, Name: "John Doe"}
+        
+        res.SetStatus(201)
+        res.JSON(user)
+    })
+    
+    server.Listen(":8080")
+}</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="example-panel" id="static">
+                    <h3>Serving Static Files</h3>
+                    <div class="code-block">
+                        <pre><code class="language-go">func main() {
+    server := SpawnServer()
+    
+    // Serve static files from "public" directory
+    server.ServeStatic("/assets", "public")
+    
+    server.Get("/", func(req *Request, res *Response) {
+        res.Write(`&lt;html&gt;
+            &lt;head&gt;
+                &lt;link rel="stylesheet" href="/assets/style.css"&gt;
+            &lt;/head&gt;
+            &lt;body&gt;
+                &lt;h1&gt;Welcome!&lt;/h1&gt;
+                &lt;img src="/assets/logo.png" alt="Logo"&gt;
+            &lt;/body&gt;
+        &lt;/html&gt;`)
+        res.Send()
+    })
+    
+    server.Listen(":8080")
+}</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Squirrel Framework</h3>
+                    <p>A simple and minimalist web framework for Go developers.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/useranonymous001/squirrel" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://x.com/KhatriRohan1106" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Documentation</h4>
+                    <ul>
+                        <li><a href="docs.html#getting-started">Getting Started</a></li>
+                        <li><a href="docs.html#api-reference">API Reference</a></li>
+                        <li><a href="docs.html#middleware">Middleware</a></li>
+                        <li><a href="docs.html#examples">Examples</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="https://github.com/useranonymous001/squirrel/issues">Issues</a></li>
+                        <li><a href="https://github.com/useranonymous001/squirrel/discussions">Discussions</a></li>
+                        <li><a href="https://github.com/useranonymous001/squirrel/blob/main/CONTRIBUTING.md">Contributing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://golang.org/">Go Language</a></li>
+                        <li><a href="https://github.com/useranonymous001/squirrel/releases">Releases</a></li>
+                        <li><a href="https://github.com/useranonymous001/squirrel/blob/main/LICENSE">License</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Squirrel Framework. Built with ❤️ for Go developers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>
